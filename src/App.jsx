@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
-  BrowserRouter as Routes, Route, Link, useMatch
+  BrowserRouter as Routes, Route, Link, useMatch, useNavigate
 } from 'react-router-dom'
 
 const Menu = () => {
@@ -83,6 +83,8 @@ const CreateNew = ({ addNew }) => {
   const [author, setAuthor] = useState('')
   const [info, setInfo] = useState('')
 
+  const navigate = useNavigate()
+
   const handleSubmit = (e) => {
     e.preventDefault()
     addNew({
@@ -91,6 +93,8 @@ const CreateNew = ({ addNew }) => {
       info,
       votes: 0
     })
+
+    navigate('/')
   }
 
   return (
@@ -117,6 +121,26 @@ const CreateNew = ({ addNew }) => {
 
 CreateNew.propTypes = {
   addNew: PropTypes.func.isRequired
+}
+
+const Notification = ({ notify }) => {
+  const style = {
+    border: 'solid',
+    padding: 10,
+    borderWidth: 1,
+    marginBottom: 10
+  }
+  if (notify === '') return null
+
+  return (
+    <div style={style}>
+      <p>{notify}</p>
+    </div>
+  )
+}
+
+Notification.propTypes = {
+  notify: PropTypes.string.isRequired
 }
 
 const App = () => {
@@ -148,6 +172,10 @@ const App = () => {
   const addNew = (anecdote) => {
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
+    setNotification('Anecdote successfully created!')
+    setTimeout(() => {
+      setNotification('')
+    }, 5000)
   }
 
   const anecdoteById = (id) =>
@@ -168,6 +196,7 @@ const App = () => {
     <div>
       <h1>Software anecdotes</h1>
       <Menu />
+      <Notification notify={notification} />
       <Routes>
         <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
         <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
