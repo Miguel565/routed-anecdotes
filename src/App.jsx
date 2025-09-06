@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import {
-  BrowserRouter as Router, Routes, Route, Link
+  BrowserRouter as Routes, Route, Link, useMatch
 } from 'react-router-dom'
 
 const Menu = () => {
@@ -24,12 +24,11 @@ const AnecdoteList = ({ anecdotes }) => {
       <ul>
         {anecdotes.map(anecdote => 
           <li key={anecdote.id} >
-            {anecdote.content}
-            <br />
-            <small>
-              {anecdote.author} | <a href={anecdote.info}>more info</a>
-            </small>
-            has: {anecdote.votes} votes
+            <p>
+              <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
+            </p>
+            <p>{anecdote.author} | <a href={anecdote.info}>more info</a></p>
+            <p>has: {anecdote.votes} votes</p>
           </li>
         )}
       </ul>
@@ -39,6 +38,22 @@ const AnecdoteList = ({ anecdotes }) => {
 
 AnecdoteList.propTypes = {
   anecdotes: PropTypes.array.isRequired
+}
+
+const Anecdote = ({ anecdote }) => {
+  return (
+    <div>
+      <h2><strong>{anecdote.content} by {anecdote.author} </strong></h2>
+      <p>has {anecdote.votes} votes</p>
+      <p>
+        <a href={anecdote.info}>more info</a>
+      </p>
+    </div>
+  )
+}
+
+Anecdote.propTypes = {
+  anecdote: PropTypes.object.isRequired
 }
 
 const About = () => (
@@ -122,6 +137,12 @@ const App = () => {
     }
   ])
 
+  const match = useMatch('/anecdotes/:id')
+
+  const anecdote = match
+    ? anecdotes.find(anecdote => anecdote.id === Number(match.params.id))
+    : null
+
   const [notification, setNotification] = useState('')
 
   const addNew = (anecdote) => {
@@ -146,14 +167,13 @@ const App = () => {
   return (
     <div>
       <h1>Software anecdotes</h1>
-      <Router>
-        <Menu />
-        <Routes>
-          <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
-          <Route path='/about' element={<About />} />
-          <Route path='/create' element={<CreateNew addNew={addNew} />} />
-        </Routes>
-      </Router>
+      <Menu />
+      <Routes>
+        <Route path='/' element={<AnecdoteList anecdotes={anecdotes} />} />
+        <Route path='/anecdotes/:id' element={<Anecdote anecdote={anecdote} />} />
+        <Route path='/about' element={<About />} />
+        <Route path='/create' element={<CreateNew addNew={addNew} />} />
+      </Routes>
       <Footer />
     </div>
   )
