@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useField } from './hooks'
 import PropTypes from 'prop-types'
 import {
   BrowserRouter as Routes, Route, Link, useMatch, useNavigate
@@ -27,8 +28,6 @@ const AnecdoteList = ({ anecdotes }) => {
             <p>
               <Link to={`/anecdotes/${anecdote.id}`}>{anecdote.content}</Link>
             </p>
-            <p>{anecdote.author} | <a href={anecdote.info}>more info</a></p>
-            <p>has: {anecdote.votes} votes</p>
           </li>
         )}
       </ul>
@@ -79,9 +78,9 @@ const Footer = () => (
 )
 
 const CreateNew = ({ addNew }) => {
-  const [content, setContent] = useState('')
-  const [author, setAuthor] = useState('')
-  const [info, setInfo] = useState('')
+  const content = useField('text')
+  const author = useField('text')
+  const info = useField('text')
 
   const navigate = useNavigate()
 
@@ -103,15 +102,15 @@ const CreateNew = ({ addNew }) => {
       <form onSubmit={handleSubmit}>
         <div>
           content
-          <input type='text' name='content' value={content} onChange={(e) => setContent(e.target.value)} />
+          <input {...content} />
         </div>
         <div>
           author
-          <input type='text' name='author' value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <input {...author} />
         </div>
         <div>
           url for more info
-          <input type='text' name='info' value={info} onChange={(e)=> setInfo(e.target.value)} />
+          <input {...info} />
         </div>
         <button>create</button>
       </form>
