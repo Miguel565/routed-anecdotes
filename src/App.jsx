@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useField } from './hooks'
 import PropTypes from 'prop-types'
-import {
-  BrowserRouter as Routes, Route, Link, useMatch, useNavigate
-} from 'react-router-dom'
+import { Routes, Route, Link, useMatch, useNavigate } from 'react-router-dom'
 
 const Menu = () => {
   const padding = {
@@ -78,22 +76,23 @@ const Footer = () => (
 )
 
 const CreateNew = ({ addNew }) => {
-  const content = useField('text')
-  const author = useField('text')
-  const info = useField('text')
+  const { rest: resetContent, ...content } = useField('text')
+  const { rest: resetAuthor, ...author } = useField('text')
+  const {reset: resetInfo, ...info } = useField('text')
 
-  const navigate = useNavigate()
-
-  const handleSubmit = (e) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     addNew({
-      content,
-      author,
-      info,
+      ...content.value,
+      ...author.value,
+      ...info.value,
       votes: 0
     })
+  }
 
-    navigate('/')
+  const handleReset = () => {
+    resetContent()
+    resetAuthor()
+    resetInfo()
   }
 
   return (
@@ -113,6 +112,7 @@ const CreateNew = ({ addNew }) => {
           <input {...info} />
         </div>
         <button>create</button>
+        <button onClick={handleReset}>reset</button>
       </form>
     </div>
   )
@@ -143,6 +143,9 @@ Notification.propTypes = {
 }
 
 const App = () => {
+
+  const navigate = useNavigate()
+
   const [anecdotes, setAnecdotes] = useState([
     {
       content: 'If it hurts, do it more often',
@@ -169,6 +172,7 @@ const App = () => {
   const [notification, setNotification] = useState('')
 
   const addNew = (anecdote) => {
+    navigate('/')
     anecdote.id = Math.round(Math.random() * 10000)
     setAnecdotes(anecdotes.concat(anecdote))
     setNotification('Anecdote successfully created!')
