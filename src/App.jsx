@@ -76,20 +76,26 @@ const Footer = () => (
 )
 
 const CreateNew = ({ addNew }) => {
-  const { rest: resetContent, ...content } = useField('text')
-  const { rest: resetAuthor, ...author } = useField('text')
-  const {reset: resetInfo, ...info } = useField('text')
+  const { reset: resetContent, ...content } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetInfo, ...info } = useField('text')
 
-  const handleSubmit = () => {
+  const handleSubmit = (event) => {
+    event.preventDefault()
     addNew({
-      ...content.value,
-      ...author.value,
-      ...info.value,
+      content: content.value,
+      author: author.value,
+      info: info.value,
       votes: 0
     })
+
+    resetContent()
+    resetAuthor()
+    resetInfo()
   }
 
-  const handleReset = () => {
+  const handleReset = (event) => {
+    event.preventDefault()
     resetContent()
     resetAuthor()
     resetInfo()
